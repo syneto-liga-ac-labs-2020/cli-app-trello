@@ -1,12 +1,24 @@
-#key=61a82688e26edda8dd53da6cfe388253
-#token=4b904a18f0346b5fb44b1818bf0cf5ea9e8d1d3f573f527657ca9635fc791016
-
 import argparse
+import os
+
+def get_auth(filepath):
+    with open(filepath,'r') as f:
+        contents = f.readlines()
+        return contents[0].strip('\n'),contents[1].strip('\n')
+    return ("","")
+
+filepath = './auth.txt'
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("key", help="Your trello api key")
-parser.add_argument("token", help="Your trello api token")
+if not os.path.exists(filepath):
+    parser.add_argument("key", help="Your trello api key")
+    parser.add_argument("token", help="Your trello api token")
+else:
+    key,token = get_auth(filepath)
+
+print(key,token)
+
 parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true") # action="count", default=False
 
 args = parser.parse_args()
