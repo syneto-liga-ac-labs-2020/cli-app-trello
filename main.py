@@ -21,6 +21,10 @@ class TrelloApi:
         url = f'https://api.trello.com/1/members/me/boards?key={self.key}&token={self.token}'
         return self.__get(url)
 
+    def get_user_lists(self, board_id):
+        url = f"https://api.trello.com/1/boards/{board_id}/lists?key={self.key}&token={self.token}"
+        return self.__get(url)
+
 
 
 def get_auth(filepath):
@@ -30,14 +34,6 @@ def get_auth(filepath):
     return ("", "")
 
 
-def get_user_lists(key, token, board_id):
-    url = f"https://api.trello.com/1/boards/{board_id}/lists?key={key}&token={token}"
-    response = requests.get(url)
-    result = []
-    for lists in response.json():
-        result.append({'id': lists.get('id'), 'name': lists.get('name')})
-
-    return result
 
 
 def get_user_cards(key, token, list_id):
@@ -73,8 +69,17 @@ def get_user_boards(api):
     user_boards = api.get_user_boards()
     print(user_boards)
 
+@girafa.command()
+@click.option('--board-id', help='Id of the board.')
+@click.pass_obj
+def get_user_lists(api, board_id):
+    user_lists = api.get_user_lists(board_id)
+    print(user_lists)
+
 if __name__ == '__main__':
     girafa()
+
+
 
 # parser = argparse.ArgumentParser()
 #
