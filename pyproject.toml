@@ -9,6 +9,7 @@ authors = ["Raluca Carare <carare.raluca27@gmail.com>", "Denis Szoke <denisszoke
 python = "^3.6"
 requests = "^2.23.0"
 ipython = "^7.14.0"
+click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
 
