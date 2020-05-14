@@ -3,38 +3,45 @@ import os
 import requests
 from pprint import pprint
 
+
 class TrelloApi:
     def __init__(self, key, token):
         self.key = key
         self.token = token
 
+    def __get(self, url):
+        response = requests.get(url)
+        result = []
+        for item in response.json():
+            result.append({'id': item.get('id'), 'name': item.get('name')})
+
+        return result
+
+    def get_user_boards(self):
+        url = f'https://api.trello.com/1/members/me/boards?key={self.key}&token={self.token}'
+        return self.__get(url)
+
+
 
 def get_auth(filepath):
-    with open(filepath,'r') as f:
+    with open(filepath, 'r') as f:
         contents = f.readlines()
-        return contents[0].strip('\n'),contents[1].strip('\n')
-    return ("","")
+        return contents[0].strip('\n'), contents[1].strip('\n')
+    return ("", "")
 
-def get_user_boards(key, token):
-    url = f'https://api.trello.com/1/members/me/boards?key={key}&token={token}'
-    response = requests.get(url)
-    result = []
-    for board in response.json():
-        result.append({'id':board.get('id'), 'name':board.get('name')})
 
-    return result
-
-def get_user_lists(key,token,board_id):
-    url= f"https://api.trello.com/1/boards/{board_id}/lists?key={key}&token={token}"
+def get_user_lists(key, token, board_id):
+    url = f"https://api.trello.com/1/boards/{board_id}/lists?key={key}&token={token}"
     response = requests.get(url)
     result = []
     for lists in response.json():
-        result.append({'id':lists.get('id'),'name':lists.get('name')})
+        result.append({'id': lists.get('id'), 'name': lists.get('name')})
 
     return result
 
+
 def get_user_cards(key, token, list_id):
-    url =  f"https://api.trello.com/1/lists/{list_id}/cards?key={key}&token={token}"
+    url = f"https://api.trello.com/1/lists/{list_id}/cards?key={key}&token={token}"
     response = requests.get(url)
     result = []
     for card in response.json():
@@ -45,7 +52,7 @@ def get_user_cards(key, token, list_id):
 filepath = './auth.txt'
 
 
-@click.group(help = 'Trello Api')
+@click.group(help='Trello Api')
 @click.option(
     "--verbose",
     "-v",
@@ -55,13 +62,19 @@ filepath = './auth.txt'
     help="Enable debug output",
 )
 @click.pass_context
-def cli(ctx, verbose):
+def girafa(ctx, verbose):
     key, token = get_auth(filepath)
     ctx.obj = TrelloApi(key, token)
 
-if __name__ == '__main__':
-    cli()
 
+@girafa.command()
+@click.pass_obj
+def get_user_boards(api):
+    user_boards = api.get_user_boards()
+    print(user_boards)
+
+if __name__ == '__main__':
+    girafa()
 
 # parser = argparse.ArgumentParser()
 #
@@ -82,4 +95,3 @@ if __name__ == '__main__':
 # list_ = get_user_lists(key,token,boards_list[0].get('id'))
 #
 # pprint(get_user_cards(key,token, list_[0].get('id')))
-
