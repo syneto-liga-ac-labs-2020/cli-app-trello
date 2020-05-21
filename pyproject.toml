@@ -3,7 +3,7 @@ name = "cli-app-trello"
 version = "0.1.0"
 description = ""
 authors = ["Raluca Carare <carare.raluca27@gmail.com>", "Denis Szoke <denisszoke@yahoo.com>", "Denisa Gal <denisagal20@gmail.com>",
-"Darius Milea <dariusmilea@yahoo.com>", "Alexandra Veres <alexandraveres7@gmail.com>","Daicu Denisa <daicudenisa@yahoo.com>"]
+"Darius Milea <dariusmilea@yahoo.com>", "Alexandra Veres <alexandraveres7@gmail.com>","Daicu Denisa <daicudenisa@yahoo.com>", "Unici Codrin <unicicodrin@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"

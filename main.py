@@ -17,6 +17,12 @@ class TrelloApi:
 
         return result
 
+    def __post(self, url, data):
+        response = requests.post(url, data)
+        if response.status_code == 200:
+            return True
+        return False
+
     def get_user_boards(self):
         url = f'https://api.trello.com/1/members/me/boards?key={self.key}&token={self.token}'
         return self.__get(url)
@@ -25,6 +31,21 @@ class TrelloApi:
         url = f"https://api.trello.com/1/boards/{board_id}/lists?key={self.key}&token={self.token}"
         return self.__get(url)
 
+    def add_user_cards(self, list_id, name):
+        url = f'https://api.trello.com/1/cards?key={self.key}&token={self.token}'
+        is_card_added = self.__post(url, {'idList': list_id, 'name': name})
+        if is_card_added:
+            pprint('card added succesfully')
+        else:
+            pprint('card failed to add')
+
+    def get_user_card(self, list_id):
+        url = f"https://api.trello.com/1/lists/{list_id}/cards?key={self.key}&token={self.token}"
+        response = requests.get(url)
+        result = []
+        for card in response.json():
+            result.append({'id': card.get('id'), 'name': card.get('name'), 'desc': card.get('desc')})
+        return result
 
 
 def get_auth(filepath):
@@ -32,17 +53,6 @@ def get_auth(filepath):
         contents = f.readlines()
         return contents[0].strip('\n'), contents[1].strip('\n')
     return ("", "")
-
-
-
-
-def get_user_cards(key, token, list_id):
-    url = f"https://api.trello.com/1/lists/{list_id}/cards?key={key}&token={token}"
-    response = requests.get(url)
-    result = []
-    for card in response.json():
-        result.append({'id': card.get('id'), 'nume': card.get('nume'), 'desc': card.get('desc')})
-    return result
 
 
 filepath = './auth.txt'
@@ -69,6 +79,7 @@ def get_user_boards(api):
     user_boards = api.get_user_boards()
     print(user_boards)
 
+
 @girafa.command()
 @click.option('--board-id', help='Id of the board.')
 @click.pass_obj
@@ -76,27 +87,21 @@ def get_user_lists(api, board_id):
     user_lists = api.get_user_lists(board_id)
     print(user_lists)
 
+
+@girafa.command()
+@click.option('--list-id', help='Id of the list the card should be created in.')
+@click.option('--name', help='The name of the card')
+@click.pass_obj
+def add_user_card(api, list_id, name):
+    api.add_user_cards(list_id, name)
+
+
+@girafa.command()
+@click.option('--list-id', help='Id of the list the card we want to see.')
+@click.pass_obj
+def get_user_cards(api, list_id):
+    pprint(api.get_user_card(list_id))
+
+
 if __name__ == '__main__':
     girafa()
-
-
-
-# parser = argparse.ArgumentParser()
-#
-# if not os.path.exists(filepath):
-#     parser.add_argument("key", help="Your trello api key")
-#     parser.add_argument("token", help="Your trello api token")
-# else:
-#     key,token = get_auth(filepath)
-#
-# print(key,token)
-#
-# parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true") # action="count", default=False
-#
-# args = parser.parse_args()
-#
-# boards_list=get_user_boards(key, token)
-# #boards_list[0]
-# list_ = get_user_lists(key,token,boards_list[0].get('id'))
-#
-# pprint(get_user_cards(key,token, list_[0].get('id')))
