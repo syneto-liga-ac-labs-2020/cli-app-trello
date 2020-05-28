@@ -23,6 +23,12 @@ class TrelloApi:
             return True
         return False
 
+    def __put(self, url, data):
+        response = requests.put(url, data)
+        if response.status_code == 200:
+            return True
+        return False
+
     def get_user_boards(self):
         url = f'https://api.trello.com/1/members/me/boards?key={self.key}&token={self.token}'
         return self.__get(url)
@@ -38,6 +44,14 @@ class TrelloApi:
             pprint('card added succesfully')
         else:
             pprint('card failed to add')
+
+    def edit_user_card(self, card_id, name, description):
+        url = f'https://api.trello.com/1/cards/{card_id}?key={self.key}&token={self.token}'
+        is_card_updated = self.__put(url, {'id': card_id, 'name': name, 'desc' : description})
+        if is_card_updated:
+            pprint('card updated succesfully')
+        else:
+            pprint('card failed to update')
 
     def get_user_card(self, list_id):
         url = f"https://api.trello.com/1/lists/{list_id}/cards?key={self.key}&token={self.token}"
@@ -101,6 +115,14 @@ def add_user_card(api, list_id, name):
 @click.pass_obj
 def get_user_cards(api, list_id):
     pprint(api.get_user_card(list_id))
+
+@girafa.command()
+@click.option('--card-id', help='id of the card')
+@click.option('--name', help='name of the card')
+@click.option('--description', help='description of the card')
+@click.pass_obj
+def update_user_card(api, card_id,name,description):
+   api.edit_user_card(card_id,name,description)
 
 
 if __name__ == '__main__':
