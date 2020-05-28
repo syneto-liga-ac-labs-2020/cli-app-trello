@@ -30,7 +30,7 @@ class TrelloApi:
         return False
 
     def get_user_boards(self):
-        url = f'https://api.trello.com/1/members/me/boards?key={self.key}&token={self.token}'
+        url = f"https://api.trello.com/1/members/me/boards?key={self.key}&token={self.token}"
         return self.__get(url)
 
     def get_user_lists(self, board_id):
@@ -86,6 +86,25 @@ def girafa(ctx, verbose):
     key, token = get_auth(filepath)
     ctx.obj = TrelloApi(key, token)
 
+@girafa.group(help='Cards')
+@click.pass_context
+def cards(ctx):
+    pass
+
+@girafa.group(help='Lists')
+@click.pass_context
+def lists(ctx):
+    pass
+
+@lists.command(help='Add a list')
+@click.pass_obj
+def add(api):
+    pprint("Added list")
+
+@cards.command(help='Add a card')
+@click.pass_obj
+def add(api):
+    pprint("Added card")
 
 @girafa.command()
 @click.pass_obj
