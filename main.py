@@ -29,6 +29,12 @@ class TrelloApi:
             return True
         return False
 
+    def __delete(self, url):
+        response = requests.delete(url)
+        if response.status_code == 200:
+            return True
+        return False
+
     def get_user_boards(self):
         url = f"https://api.trello.com/1/members/me/boards?key={self.key}&token={self.token}"
         return self.__get(url)
@@ -61,6 +67,13 @@ class TrelloApi:
             result.append({'id': card.get('id'), 'name': card.get('name'), 'desc': card.get('desc')})
         return result
 
+    def delete_user_card(self, card_id):
+    	url = f'https://api.trello.com/1/cards/{card_id}?key={self.key}&token={self.token}'
+    	is_card_deleted = self.__delete(url)
+    	if is_card_deleted:
+    		pprint('Card deleted succesfully')
+    	else:
+    		pprint('Could not delete card')
 
 def get_auth(filepath):
     with open(filepath, 'r') as f:
@@ -90,6 +103,12 @@ def girafa(ctx, verbose):
 @click.pass_context
 def cards(ctx):
     pass
+
+@cards.command(help ='Delete')
+@click.option('--card-id', help='id of the card')
+@click.pass_obj
+def delete(api, card_id):
+	api.delete_user_card(card_id)
 
 @girafa.group(help='Lists')
 @click.pass_context
